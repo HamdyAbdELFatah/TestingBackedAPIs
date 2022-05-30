@@ -9,4 +9,9 @@
     <string name="parameters">Parameters</string>
     <string name="value">Value</string>
     <string name="key">Key</string>
+
+    <string-array name="request_method_spinner">
+        <item>GET</item>
+        <item>POST</item>
+    </string-array>
 </resources>
