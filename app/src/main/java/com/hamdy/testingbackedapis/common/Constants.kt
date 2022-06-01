@@ -10,4 +10,7 @@ object Constants {
     const val HEADER_TYPE = "Header"
     const val PARAMETERS_TYPE = "Parameters"
 
+    const val GET_METHODE = "GET"
+    const val POST_METHODE = "POST"
+
 }

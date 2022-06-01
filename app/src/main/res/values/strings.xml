@@ -15,4 +15,12 @@
         <item>GET</item>
         <item>POST</item>
     </string-array>
+
+    <string name="title_activity_result">ResultActivity</string>
+    <string name="tab_navigation">Tab Navigation</string>
+    <string name="status_code_tab">Status</string>
+    <string name="response_tab">Response</string>
+    <string name="header_tab">Headers</string>
+    <string name="logo">logo</string>
+
 </resources>

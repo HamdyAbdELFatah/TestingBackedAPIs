@@ -1,4 +1,4 @@
-package com.hamdy.testingbackedapis.presentation.adapter
+package com.hamdy.testingbackedapis.presentation.main_activity.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

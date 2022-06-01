@@ -1,5 +1,6 @@
-package com.hamdy.testingbackedapis.presentation
+package com.hamdy.testingbackedapis.presentation.main_activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hamdy.testingbackedapis.MyApplication
 import com.hamdy.testingbackedapis.R
+import com.hamdy.testingbackedapis.common.Constants.GET_METHODE
 import com.hamdy.testingbackedapis.common.Constants.HEADER_TYPE
 import com.hamdy.testingbackedapis.common.Constants.PARAMETERS_TYPE
 import com.hamdy.testingbackedapis.common.NetworkStatus.isNetworkAvailable
@@ -17,8 +19,9 @@ import com.hamdy.testingbackedapis.data.NetworkDataRepositoryImpl
 import com.hamdy.testingbackedapis.databinding.ActivityMainBinding
 import com.hamdy.testingbackedapis.domain.model.ParamsData
 import com.hamdy.testingbackedapis.domain.model.RequestData
-import com.hamdy.testingbackedapis.presentation.adapter.ParametersViewHolder
-import com.hamdy.testingbackedapis.presentation.adapter.ParamsAdapter
+import com.hamdy.testingbackedapis.presentation.main_activity.adapter.ParametersViewHolder
+import com.hamdy.testingbackedapis.presentation.main_activity.adapter.ParamsAdapter
+import com.hamdy.testingbackedapis.presentation.result_activity.ResultActivity
 
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
@@ -30,8 +33,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     private lateinit var binding: ActivityMainBinding
     private var parameterCount = 0
     private var headersCount = 0
-    private var url = ""
-    private var requestMethode = "GET"
+    private var url = "https://httpbin.org/get"
+    private var requestMethode = GET_METHODE
     private lateinit var headersAdapter: ParamsAdapter
     private lateinit var parametersAdapter: ParamsAdapter
     private lateinit var viewModel: MainActivityViewModel
@@ -65,6 +68,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
         binding.requestButton.setOnClickListener(this)
         binding.urlText.addTextChangedListener { viewModel.changeUrl(it.toString()) }
         viewModelObserver()
+        binding.urlText.setText(url)
 
     }
 
@@ -134,7 +138,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
 //                        Log.d("manprint", "onClick: ${i.id} ${i.key}  ${i.value}")
 //                    for (i in parameterList)
 //                        Log.d("manprint", "onClick: ${i.id} ${i.key}  ${i.value}")
-                    viewModel.getResponseStatus(url, requestMethode)
+
+                    if(requestMethode == GET_METHODE){
+                        viewModel.getResponse(url, requestMethode)
+                    }else{
+                        viewModel.postResponse(url, requestMethode)
+                    }
+//                    viewModel.getResponseStatus(url, requestMethode)
+//                    startActivity(Intent(this@MainActivity, ResultActivity::class.java))
                 }
             } else {
                 Toast.makeText(this@MainActivity, "No Internet Connection", Toast.LENGTH_SHORT)

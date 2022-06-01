@@ -14,10 +14,20 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
     <style name="CategoryStyle">
-        <item name="android:textSize"> 16sp </item>
-        <item name="android:textColor"> @color/colorPrimary </item>
-        <item name="android:textStyle"> bold </item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
 
     </style>
+
+    <style name="Theme.TestingBackedAPIs.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.TestingBackedAPIs.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.TestingBackedAPIs.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

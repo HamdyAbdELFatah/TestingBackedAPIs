@@ -1,4 +1,4 @@
-package com.hamdy.testingbackedapis.presentation.adapter
+package com.hamdy.testingbackedapis.presentation.main_activity.adapter
 
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
@@ -11,8 +11,14 @@ class ParametersViewHolder(
 ) :
     RecyclerView.ViewHolder(binding.root) {
     fun bind(item: ParamsData) {
-        binding.keyField.setText(item.key)
-        binding.valueField.setText(item.value)
+        binding.keyField.apply {
+            setText(item.key)
+            setSelection(this.length())
+        }
+        binding.valueField.apply {
+            setText(item.value)
+            setSelection(this.length())
+        }
         binding.removeField.setOnClickListener {
             onDeleteItemClickListener.onDeleteClicked(adapterPosition, item.type)
         }
@@ -25,7 +31,7 @@ class ParametersViewHolder(
         }
     }
 
-    public interface OnKeyValueItemTouch {
+    interface OnKeyValueItemTouch {
         fun onDeleteClicked(position: Int, type: String)
         fun onKeyChange(position: Int, key: String, type: String)
         fun onValueChange(position: Int, value: String, type: String)

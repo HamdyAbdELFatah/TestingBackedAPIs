@@ -1,10 +1,21 @@
 package com.hamdy.testingbackedapis.domain.repository
 
+import com.hamdy.testingbackedapis.domain.model.ParamsData
+import java.net.HttpURLConnection
+
 interface NetworkDataRepository {
-    fun getResponseStatus(url: String, method: String)
 
-    fun getResponseHeaders(url: String, method: String)
+    fun getResponse(
+        url: String,
+        method: String,
+        listHeaders: MutableList<ParamsData>,
+        listParameters: MutableList<ParamsData>
+    )
 
-    fun getResponseBody(url: String, method: String)
+    fun getHeader(connection: HttpURLConnection)
+    fun addHeaders(connection: HttpURLConnection, listHeaders: MutableList<ParamsData>)
+    fun addParameters(connection: HttpURLConnection, listParameters: MutableList<ParamsData>)
+
+    fun postResponse(url: String, method: String)
 
 }

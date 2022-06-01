@@ -1,6 +1,5 @@
-package com.hamdy.testingbackedapis.presentation
+package com.hamdy.testingbackedapis.presentation.main_activity
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,8 +25,11 @@ class MainActivityViewModel(private val networkDataRepositoryImpl: NetworkDataRe
     val parameterList: LiveData<MutableList<ParamsData>>
         get() = _parameterList
 
-    fun getResponseStatus(url: String, method: String) {
-        networkDataRepositoryImpl.getResponseBody(url, method)
+    fun getResponse(url: String, method: String) {
+        networkDataRepositoryImpl.getResponse(url, method,headersList.value!!,parameterList.value!!)
+    }
+    fun postResponse(url: String, method: String) {
+        networkDataRepositoryImpl.postResponse(url, method)
     }
 
     fun changeUrl(url: String) {
