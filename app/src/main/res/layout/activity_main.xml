@@ -43,7 +43,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/url_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/url_label"
-            app:layout_constraintTop_toTopOf="@+id/url_label" />
+            app:layout_constraintTop_toTopOf="@+id/url_label"
+            tools:ignore="TextContrastCheck" />
 
         <TextView
             android:id="@+id/header"
@@ -117,18 +118,63 @@
             android:id="@+id/request_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/request"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/post_body" />
 
         <Spinner
             android:id="@+id/method_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/request_method_spinner"
+            android:minHeight="48dp"
             app:layout_constraintBottom_toBottomOf="@+id/request_method"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/request_method" />
+            app:layout_constraintTop_toTopOf="@+id/request_method"
+            tools:ignore="TouchTargetSizeCheck,TouchTargetSizeCheck" />
+
+        <TextView
+            android:id="@+id/post_body_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            style="@style/CategoryStyle"
+            android:text="@string/post_body"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/parameters_recycler_view" />
+
+        <EditText
+            android:id="@+id/post_body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:ems="10"
+            android:enabled="false"
+            android:gravity="start|top"
+            android:maxLines="4"
+            android:inputType="textMultiLine"
+            android:isScrollContainer="true"
+            android:hint="@string/post_body_hint"
+            app:layout_constraintBottom_toBottomOf="@+id/post_body_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/post_body_label"
+            app:layout_constraintTop_toTopOf="@+id/post_body_label"
+            />
+        <ProgressBar
+            android:id="@+id/loading_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:progressTint="@color/colorSecondary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="visible"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

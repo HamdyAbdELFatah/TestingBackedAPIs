@@ -13,4 +13,6 @@ object Constants {
     const val GET_METHODE = "GET"
     const val POST_METHODE = "POST"
 
+    const val REQUEST_DATA_KEY = "REQUEST_DATA_KEY"
+
 }

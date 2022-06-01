@@ -25,7 +25,7 @@ class PlaceholderFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pageViewModel = ViewModelProvider(this)[PageViewModel::class.java].apply {
-            setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
+            setIndex(arguments?.getString(ARG_SECTION_NUMBER) ?: "")
         }
     }
 
@@ -38,9 +38,9 @@ class PlaceholderFragment : Fragment() {
         val root = binding.root
 
         val textView: TextView = binding.sectionLabel
-        pageViewModel.text.observe(viewLifecycleOwner, Observer {
+        pageViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
-        })
+        }
         return root
     }
 
@@ -56,10 +56,10 @@ class PlaceholderFragment : Fragment() {
          * number.
          */
         @JvmStatic
-        fun newInstance(sectionNumber: Int): PlaceholderFragment {
+        fun newInstance(response: String): PlaceholderFragment {
             return PlaceholderFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_SECTION_NUMBER, sectionNumber)
+                    putString(ARG_SECTION_NUMBER, response)
                 }
             }
         }

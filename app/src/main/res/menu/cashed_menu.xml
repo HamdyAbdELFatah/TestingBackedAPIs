@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/sort_by_time"
+        android:orderInCategory="100"
+        android:title="SortByTime"/>
+    <item
+        android:id="@+id/get_filter"
+        android:orderInCategory="100"
+        android:title="Filter By Get"/>
+    <item
+        android:id="@+id/post_filter"
+        android:orderInCategory="100"
+        android:title="Filter By Post"/>
+</menu>

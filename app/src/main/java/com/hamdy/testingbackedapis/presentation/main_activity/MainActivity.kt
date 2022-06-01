@@ -2,6 +2,8 @@ package com.hamdy.testingbackedapis.presentation.main_activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
@@ -14,14 +16,16 @@ import com.hamdy.testingbackedapis.R
 import com.hamdy.testingbackedapis.common.Constants.GET_METHODE
 import com.hamdy.testingbackedapis.common.Constants.HEADER_TYPE
 import com.hamdy.testingbackedapis.common.Constants.PARAMETERS_TYPE
+import com.hamdy.testingbackedapis.common.Constants.REQUEST_DATA_KEY
 import com.hamdy.testingbackedapis.common.NetworkStatus.isNetworkAvailable
 import com.hamdy.testingbackedapis.data.NetworkDataRepositoryImpl
 import com.hamdy.testingbackedapis.databinding.ActivityMainBinding
 import com.hamdy.testingbackedapis.domain.model.ParamsData
-import com.hamdy.testingbackedapis.domain.model.RequestData
+import com.hamdy.testingbackedapis.presentation.cached_activity.CachedActivity
 import com.hamdy.testingbackedapis.presentation.main_activity.adapter.ParametersViewHolder
 import com.hamdy.testingbackedapis.presentation.main_activity.adapter.ParamsAdapter
 import com.hamdy.testingbackedapis.presentation.result_activity.ResultActivity
+import java.io.Serializable
 
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
@@ -29,15 +33,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     private lateinit var requestMethods: Array<String>
     private lateinit var headersList: MutableList<ParamsData>
     private lateinit var parameterList: MutableList<ParamsData>
-    private lateinit var requestData: RequestData
     private lateinit var binding: ActivityMainBinding
     private var parameterCount = 0
     private var headersCount = 0
     private var url = "https://httpbin.org/get"
+    private var body = ""
     private var requestMethode = GET_METHODE
     private lateinit var headersAdapter: ParamsAdapter
     private lateinit var parametersAdapter: ParamsAdapter
     private lateinit var viewModel: MainActivityViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -47,7 +52,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
             this,
             MainActivityViewModelFactory(
                 NetworkDataRepositoryImpl(
-                    app.executorService
+                    app.executorService,
+                    app.mainThreadHandler
                 )
             )
         )[MainActivityViewModel::class.java]
@@ -67,14 +73,23 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
         binding.addParameters.setOnClickListener(this)
         binding.requestButton.setOnClickListener(this)
         binding.urlText.addTextChangedListener { viewModel.changeUrl(it.toString()) }
+        binding.postBody.addTextChangedListener { viewModel.changeBody(it.toString()) }
         viewModelObserver()
         binding.urlText.setText(url)
+        binding.postBody.setText(body)
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
     }
 
     private fun viewModelObserver() {
         viewModel.url.observe(this) {
             url = it
+        }
+        viewModel.body.observe(this) {
+            body = it
         }
         viewModel.headersCount.observe(this) {
             headersCount = it
@@ -90,10 +105,23 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
             parameterList = it
             parametersAdapter.differ.submitList(it.toList())
         }
+        viewModel.errorResponse.observe(this) {
+            binding.loadingBar.visibility = View.GONE
+            Toast.makeText(this, "$it", Toast.LENGTH_SHORT).show()
+        }
+        viewModel.myGetResponse.observe(this) {
+            val intent = Intent(this@MainActivity, ResultActivity::class.java)
+            intent.putExtra(REQUEST_DATA_KEY, it as Serializable)
+            binding.loadingBar.visibility = View.GONE
+            startActivity(intent)
+            Toast.makeText(this@MainActivity, "${it.statusCode}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, index: Int, p3: Long) {
         requestMethode = requestMethods[index]
+        binding.postBody.isEnabled = requestMethode != GET_METHODE
+
     }
 
 
@@ -134,18 +162,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
                 if (url.isEmpty()) {
                     binding.urlText.error = "Url can't be empty"
                 } else {
-//                    for (i in headersList)
-//                        Log.d("manprint", "onClick: ${i.id} ${i.key}  ${i.value}")
-//                    for (i in parameterList)
-//                        Log.d("manprint", "onClick: ${i.id} ${i.key}  ${i.value}")
-
-                    if(requestMethode == GET_METHODE){
+                    if (requestMethode == GET_METHODE) {
                         viewModel.getResponse(url, requestMethode)
-                    }else{
+                    } else {
                         viewModel.postResponse(url, requestMethode)
                     }
-//                    viewModel.getResponseStatus(url, requestMethode)
-//                    startActivity(Intent(this@MainActivity, ResultActivity::class.java))
+                    binding.loadingBar.visibility = View.VISIBLE
                 }
             } else {
                 Toast.makeText(this@MainActivity, "No Internet Connection", Toast.LENGTH_SHORT)
@@ -154,6 +176,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.cached_request -> {
+                startActivity(Intent(this, CachedActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {}
 }

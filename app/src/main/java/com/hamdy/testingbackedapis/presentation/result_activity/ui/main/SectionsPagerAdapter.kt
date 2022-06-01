@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.hamdy.testingbackedapis.R
+import com.hamdy.testingbackedapis.domain.model.RequestData
 
 private val TAB_TITLES = arrayOf(
     R.string.status_code_tab,
@@ -16,16 +17,22 @@ private val TAB_TITLES = arrayOf(
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
+class SectionsPagerAdapter(
+    private val context: Context,
+    fm: FragmentManager,
+    private val requestData: RequestData
+) :
     FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
-        return PlaceholderFragment.newInstance(position + 1)
+        return when (position) {
+            0 -> PlaceholderFragment.newInstance("Status Code: ${requestData.statusCode}")
+            1 -> PlaceholderFragment.newInstance(requestData.response)
+            else -> PlaceholderFragment.newInstance(requestData.headers)
+        }
     }
 
-    override fun getPageTitle(position: Int): CharSequence? {
+    override fun getPageTitle(position: Int): CharSequence {
         return context.resources.getString(TAB_TITLES[position])
     }
 

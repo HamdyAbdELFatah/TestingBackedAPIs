@@ -1,9 +1,12 @@
 package com.hamdy.testingbackedapis.data
 
+import android.os.Handler
 import android.util.Log
+import com.hamdy.testingbackedapis.common.Result
 import com.hamdy.testingbackedapis.data.remote.HttpClient.Companion.getConnectionInstance
 import com.hamdy.testingbackedapis.data.remote.ParameterStringBuilder
 import com.hamdy.testingbackedapis.domain.model.ParamsData
+import com.hamdy.testingbackedapis.domain.model.RequestData
 import com.hamdy.testingbackedapis.domain.repository.NetworkDataRepository
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -12,23 +15,94 @@ import java.net.HttpURLConnection
 import java.util.concurrent.Executor
 
 class NetworkDataRepositoryImpl(
-    private val executor: Executor
+    private val executor: Executor,
+    private val resultHandler: Handler
 ) : NetworkDataRepository {
-
+    private val TAG = "NetworkDataRepositoryIm"
 
     override fun getResponse(
-        url: String,
-        method: String,
-        listHeaders: MutableList<ParamsData>,
-        listParameters: MutableList<ParamsData>
+        requestData: RequestData, headersList: MutableList<ParamsData>,
+        parametersList: MutableList<ParamsData>,
+        callback: (Result<RequestData>) -> Unit
+    ) {
+        val response = StringBuilder()
+        executor.execute {
+            var connection: HttpURLConnection? = null
+            val status: Int
+            var header = ""
+            try {
+                val start = System.nanoTime()
+
+                var newUrl = requestData.url.trim()
+                val par = ParameterStringBuilder.getParamsString(parametersList)
+                if (parametersList.isNotEmpty() && par.isNotEmpty())
+                    newUrl += par
+                Log.d("NewUrl", "getResponse: $newUrl")
+                connection = getConnectionInstance(newUrl, requestData.requestMethod)
+                // add header
+                addHeaders(connection, headersList)
+                //addParameters(connection,listParameters)
+                status = connection.responseCode
+                val bufferReader: BufferedReader?
+                var line: String?
+                if (status > 299) {
+                    bufferReader = BufferedReader(InputStreamReader(connection.errorStream))
+                    while (bufferReader.readLine().also { line = it } != null) {
+                        response.append(line)
+                    }
+                } else {
+                    bufferReader = BufferedReader(InputStreamReader(connection.inputStream))
+                    while (bufferReader.readLine().also { line = it } != null) {
+                        response.append(line)
+                    }
+                    header = getHeader(connection)
+
+                }
+                bufferReader.close()
+                Log.d(TAG, "getResponseStatus: $status")
+                Log.d(TAG, "response: $response")
+                val end = System.nanoTime()
+                resultHandler.post {
+                    callback(
+                        Result.Success(
+                            requestData.copy(
+                                response = response.toString(),
+                                headers = header,
+                                statusCode = status,
+                                executionTime = end - start
+
+                            )
+                        )
+                    )
+                }
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Error: $e")
+                val errorResult = Result.Error(e)
+                resultHandler.post { callback(errorResult) }
+
+            } finally {
+                connection?.disconnect()
+            }
+        }
+    }
+
+    override fun postResponse(
+        requestData: RequestData, headersList: MutableList<ParamsData>,
+        parametersList: MutableList<ParamsData>,
+        callback: (Result<RequestData>) -> Unit
     ) {
         executor.execute {
+            val start = System.nanoTime()
             var connection: HttpURLConnection? = null
             val response = StringBuilder()
+            var header = ""
+
             try {
-                connection = getConnectionInstance(url, method)
-                // add header
-                addHeaders(connection, listHeaders)
+                connection = getConnectionInstance(requestData.url, requestData.requestMethod)
+
+                addBody(connection,requestData.postBody,parametersList)
+
                 val status = connection.responseCode
                 val bufferReader: BufferedReader?
                 var line: String?
@@ -42,62 +116,64 @@ class NetworkDataRepositoryImpl(
                     while (bufferReader.readLine().also { line = it } != null) {
                         response.append(line)
                     }
-                    getHeader(connection)
+                    header = getHeader(connection)
 
                 }
                 bufferReader.close()
-                Log.d("LastManStanding", "getResponseStatus: $status")
-                Log.d("LastManStanding", "response: $response")
-            } catch (e: Exception) {
-                Log.d("LastManStanding", "responseError: $response")
-                Log.e("LastManStanding", "Error: $e")
+                val end = System.nanoTime()
+                resultHandler.post {
+                    callback(
+                        Result.Success(
+                            requestData.copy(
+                                response = response.toString(),
+                                headers = header,
+                                statusCode = status,
+                                executionTime = end - start
+                            )
+                        )
+                    )
+                }
 
+            } catch (e: Exception) {
+                Log.e(TAG, "Error: ${e.localizedMessage}")
+                val errorResult = Result.Error(e)
+                resultHandler.post { callback(errorResult) }
             } finally {
                 connection?.disconnect()
             }
         }
     }
 
-    override fun postResponse(url: String, method: String) {
-        executor.execute {
-            var connection: HttpURLConnection? = null
-            val response = StringBuilder()
-            try {
-                connection = getConnectionInstance(url, method)
-                val status = connection.responseCode
-                val bufferReader: BufferedReader?
-                var line: String?
-                if (status > 299) {
-                    bufferReader = BufferedReader(InputStreamReader(connection.errorStream))
-                    while (bufferReader.readLine().also { line = it } != null) {
-                        response.append(line)
-                    }
-                } else {
-                    bufferReader = BufferedReader(InputStreamReader(connection.inputStream))
-                    while (bufferReader.readLine().also { line = it } != null) {
-                        response.append(line)
-                    }
-                    getHeader(connection)
+    override fun addBody(connection: HttpURLConnection, body: String,listParameters: MutableList<ParamsData>) {
+        //addParameters(connection,listParameters)
+        val out = DataOutputStream(connection.outputStream)
+        out.writeBytes(ParameterStringBuilder.getParamsString(listParameters))
 
-                }
-                bufferReader.close()
-            } catch (e: Exception) {
-                Log.e("LastManStanding", "Error: $e")
-            } finally {
-                connection?.disconnect()
-            }
+        connection.outputStream.use { os ->
+            val input: ByteArray = body.toByteArray(charset("utf-8"))
+            os.write(input, 0, input.size)
         }
+        out.flush()
+        out.close()
     }
-
-    override fun getHeader(connection: HttpURLConnection) {
+    override fun addParameters(
+        connection: HttpURLConnection,
+        listParameters: MutableList<ParamsData>
+    ) {
+        connection.doOutput = true
+        val out = DataOutputStream(connection.outputStream)
+        out.writeBytes(ParameterStringBuilder.getParamsString(listParameters))
+        out.flush()
+        out.close()
+    }
+    override fun getHeader(connection: HttpURLConnection): String {
         var i = 0
         val header: StringBuilder = StringBuilder()
         while (true) {
             val headerName: String? = connection.getHeaderFieldKey(i)
             val headerValue: String? = connection.getHeaderField(i)
             if (headerName.isNullOrBlank() && headerValue.isNullOrBlank()) {
-                Log.d("LastManStanding", "header: $header")
-                break
+                return header.toString()
             } else {
                 header.append("$headerName : $headerValue\n")
             }
@@ -109,22 +185,13 @@ class NetworkDataRepositoryImpl(
         for (header in listHeaders) {
             if (header.key.isNotEmpty()) {
                 connection.apply {
-                    setRequestProperty(header.key, header.value)
+                    setRequestProperty(header.key.trim(), header.value.trim())
                 }
             }
         }
     }
 
-    override fun addParameters(
-        connection: HttpURLConnection,
-        listParameters: MutableList<ParamsData>
-    ) {
-        val out = DataOutputStream(connection.outputStream)
-        out.writeBytes(ParameterStringBuilder.getParamsString(listParameters))
-        out.flush()
-        out.close()
 
-    }
 }
 
 

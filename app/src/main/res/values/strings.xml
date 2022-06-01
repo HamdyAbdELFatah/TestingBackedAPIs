@@ -22,5 +22,8 @@
     <string name="response_tab">Response</string>
     <string name="header_tab">Headers</string>
     <string name="logo">logo</string>
+    <string name="post_body">Post Body</string>
+    <string name="post_body_hint">{\"userName\": \"Hamdy\"}</string>
+    <string name="cached_request">Cached Request</string>
 
 </resources>
