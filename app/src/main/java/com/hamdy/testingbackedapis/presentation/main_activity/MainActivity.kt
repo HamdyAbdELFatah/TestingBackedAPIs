@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     private lateinit var binding: ActivityMainBinding
     private var parameterCount = 0
     private var headersCount = 0
-    private var url = "https://httpbin.org/get"
+    private var url = ""
     private var body = ""
     private var requestMethode = GET_METHODE
     private lateinit var headersAdapter: ParamsAdapter
