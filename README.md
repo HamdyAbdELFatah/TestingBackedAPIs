@@ -1,5 +1,5 @@
 # TestingBackedAPIs
-Is A sinpile Application to meke request from APIs by get and post
+Is a simple Application to meke request from APIs by get and post methode
 
 ## Built With 🛠
 - [Kotlin](https://kotlinlang.org/) - First class and official programming language for Android development.
