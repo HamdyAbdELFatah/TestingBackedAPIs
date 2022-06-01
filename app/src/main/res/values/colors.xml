@@ -10,6 +10,7 @@
     <color name="colorPrimary">#FF00287A</color>
     <color name="colorPrimaryVariant">#FF00287A</color>
     <color name="colorSecondary">#FFF5EB1B</color>
+    <color name="colorTransparent">#00000000</color>
 
 
 </resources>

@@ -5,6 +5,7 @@
     <string name="www_example_com">www.example.com</string>
     <string name="headers">Headers</string>
     <string name="add_items">Add items</string>
+    <string name="remove_items">Remove items</string>
     <string name="request">Request</string>
     <string name="parameters">Parameters</string>
     <string name="value">Value</string>

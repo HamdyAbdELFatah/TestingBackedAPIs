@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <EditText
-        android:id="@+id/editTextTextPersonName3"
+        android:id="@+id/value_field"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:id="@+id/key_field"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -45,13 +45,15 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.36" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/remove_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/colorTransparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_remove"
-        app:tint="@color/colorPrimary" />
+        app:tint="@color/colorPrimary"
+        android:contentDescription="@string/remove_items" />
 </androidx.constraintlayout.widget.ConstraintLayout>

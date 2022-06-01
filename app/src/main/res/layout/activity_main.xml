@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".presentation.MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -32,13 +32,13 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName"
+            android:id="@+id/url_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:ems="10"
             android:hint="@string/www_example_com"
-            android:inputType="textPersonName"
+            android:inputType="textUri"
             android:minHeight="48dp"
             app:layout_constraintBottom_toBottomOf="@+id/url_label"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,7 +57,7 @@
 
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/add_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/add_items"
@@ -89,7 +89,7 @@
             app:layout_constraintTop_toBottomOf="@+id/headers_recycler_view" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/add_parameters"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/add_items"
